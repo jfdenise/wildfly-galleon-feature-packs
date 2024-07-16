@@ -4,8 +4,6 @@
 name: WildFly Galleon feature-packs for Glow - PR and Nightly CI to test against WildFly SNAPSHOT build
 
 on:
-  schedule:
-    - cron: "0 0 * * *"
   pull_request:
     branches:
       - 'release'
