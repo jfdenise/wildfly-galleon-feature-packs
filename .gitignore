@@ -3,3 +3,4 @@ maven/docs/target/
 # Igore IDEA files
 .idea
 maven/maven-metadata/target/
+/catalog/target/
