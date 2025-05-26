@@ -542,7 +542,7 @@
       },
       "feature-pack" : "org.wildfly:wildfly-ee-galleon-pack:37.0.0.Beta1-SNAPSHOT",
       "description" : "Infinispan-based distributed cache for stateful session beans.",
-      "note" : "Infinispan-based distributed cache for stateful session beans.",
+      "note" : "ejb-local-cache layer must be explicitly excluded if ejb-dist-cache is in use.",
       "stability" : "default",
       "glowRules" : [ {
         "name" : "org.wildfly.rule.profile-ha",
@@ -756,7 +756,7 @@
       },
       "feature-pack" : "org.wildfly:wildfly-ee-galleon-pack:37.0.0.Beta1-SNAPSHOT",
       "description" : "Support for JPA with a distributed second level cache.",
-      "note" : "Support for JPA with a distributed second level cache.",
+      "note" : "jpa layer must be explicitly excluded if jpa-distributed is in use.",
       "stability" : "default",
       "glowRules" : [ {
         "name" : "org.wildfly.rule.profile-ha",
@@ -1930,7 +1930,7 @@
       },
       "feature-pack" : "org.wildfly:wildfly-ee-galleon-pack:37.0.0.Beta1-SNAPSHOT",
       "description" : "Infinispan-based local cache for stateful session beans.",
-      "note" : "Infinispan-based local cache for stateful session beans.",
+      "note" : "This layer must be explicitly excluded if ejb-dist-cache is in use.",
       "stability" : "default",
       "glowDiscoverable" : false
     }, {
@@ -2051,7 +2051,7 @@
       },
       "feature-pack" : "org.wildfly:wildfly-ee-galleon-pack:37.0.0.Beta1-SNAPSHOT",
       "description" : "Support for JPA (using the latest WildFly supported Hibernate release).",
-      "note" : "Support for JPA (using the latest WildFly supported Hibernate release).",
+      "note" : "This layer must be explicitly excluded if jpa-distributed is in use.",
       "stability" : "default",
       "glowRules" : [ {
         "name" : "org.wildfly.rule.expected-file",
@@ -2527,7 +2527,7 @@
       },
       "feature-pack" : "org.wildfly:wildfly-ee-galleon-pack:37.0.0.Beta1-SNAPSHOT",
       "description" : "Support for runtime health checks.",
-      "note" : "Support for runtime health checks.",
+      "note" : "When using the WildFly cloud feature-pack for cloud deployment, this layer will be automatically provisioned. It is required for POD health check.",
       "glowAddOn" : "health",
       "stability" : "default",
       "glowDiscoverable" : false
@@ -2635,7 +2635,7 @@
       },
       "feature-pack" : "org.keycloak:keycloak-saml-adapter-galleon-pack:999.0.0-SNAPSHOT",
       "description" : "Support for securing your Web deployments with the keyloack SAML protocol.",
-      "note" : "Support for securing your Web deployments with the keyloack SAML protocol.",
+      "note" : "Not to be used when provisioning for the cloud if you are using the env variables to automatically configure SAML (SSO_URL, SSO_REALM).",
       "stability" : "default",
       "glowRules" : [ {
         "name" : "org.wildfly.rule.inclusion-mode",
@@ -2665,7 +2665,7 @@
       },
       "feature-pack" : "org.keycloak:keycloak-saml-adapter-galleon-pack:999.0.0-SNAPSHOT",
       "description" : "Support for securing your EJB with the keyloack SAML protocol.",
-      "note" : "Support for securing your EJB with the keyloack SAML protocol.",
+      "note" : "Not to be used when provisioning for the cloud if you are using the env variables to automatically configure SAML (SSO_URL, SSO_REALM).",
       "stability" : "default",
       "glowRules" : [ {
         "name" : "org.wildfly.rule.inclusion-mode",

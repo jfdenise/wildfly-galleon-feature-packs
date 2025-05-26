@@ -88,7 +88,7 @@ public class Main {
                         layer.put("description", description);
                     }
                     if (note != null) {
-                        layer.put("note", description);
+                        layer.put("note", note);
                     }
                     if (addOn != null) {
                         layer.put("glowAddOn", addOn);
