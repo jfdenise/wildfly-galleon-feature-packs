@@ -109,6 +109,14 @@ public class Main {
                         nodes = new TreeMap<>();
                         categories.put(category, nodes);
                     }
+                    if(nodes.containsKey(layerName)) {
+                        // add all dependencies
+                        System.out.println("OVERRIDEN !!!!! " + layerName);
+                        JsonNode overriden = nodes.get(layerName);
+                        ArrayNode deps = (ArrayNode)layer.get("dependencies");
+                        ArrayNode overridenDeps = (ArrayNode) overriden.get("dependencies");
+                        deps.addAll(overridenDeps);
+                    }
                     nodes.put(layerName, layer);
                 }
             }

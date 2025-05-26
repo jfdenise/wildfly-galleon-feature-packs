@@ -2249,6 +2249,41 @@
       "glowDiscoverable" : true
     } ]
   }, {
+    "name" : "Jakarta MVC",
+    "functionalities" : [ {
+      "name" : "mvc-krazo",
+      "dependencies" : [ {
+        "name" : "bean-validation",
+        "optional" : false
+      }, {
+        "name" : "cdi",
+        "optional" : false
+      }, {
+        "name" : "jaxrs-core",
+        "optional" : false
+      }, {
+        "name" : "jsf",
+        "optional" : true
+      } ],
+      "managementModel" : {
+        "address" : "/",
+        "children" : [ {
+          "address" : "subsystem=mvc-krazo"
+        } ]
+      },
+      "feature-pack" : "org.wildfly:wildfly-galleon-pack:37.0.0.Beta1-SNAPSHOT",
+      "description" : "Support for Jakarta MVC",
+      "stability" : "preview",
+      "glowRules" : [ {
+        "name" : "org.wildfly.rule.class",
+        "value" : "jakarta.mvc"
+      }, {
+        "name" : "org.wildfly.rule.annotations",
+        "value" : "jakarta.mvc"
+      } ],
+      "glowDiscoverable" : true
+    } ]
+  }, {
     "name" : "Jakarta Messaging",
     "functionalities" : [ {
       "name" : "embedded-activemq",
@@ -2509,6 +2544,35 @@
       "glowDiscoverable" : false
     } ]
   }, {
+    "name" : "Microprofile",
+    "functionalities" : [ {
+      "name" : "microprofile-config",
+      "dependencies" : [ {
+        "name" : "cdi",
+        "optional" : false
+      } ],
+      "managementModel" : {
+        "address" : "/",
+        "children" : [ {
+          "address" : "subsystem=microprofile-config-smallrye"
+        } ]
+      },
+      "feature-pack" : "org.wildfly:wildfly-galleon-pack:37.0.0.Beta1-SNAPSHOT",
+      "description" : "Support for MicroProfile Config",
+      "stability" : "default",
+      "glowRules" : [ {
+        "name" : "org.wildfly.rule.expected-file",
+        "value" : "[/META-INF/microprofile-config.properties,/WEB-INF/classes/META-INF/microprofile-config.properties]"
+      }, {
+        "name" : "org.wildfly.rule.class",
+        "value" : "org.eclipse.microprofile.config.*"
+      }, {
+        "name" : "org.wildfly.rule.annotations",
+        "value" : "org.eclipse.microprofile.config.inject"
+      } ],
+      "glowDiscoverable" : true
+    } ]
+  }, {
     "name" : "Monitoring",
     "functionalities" : [ {
       "name" : "health",
@@ -2553,6 +2617,113 @@
       "glowAddOn" : "metrics",
       "stability" : "default",
       "glowDiscoverable" : false
+    }, {
+      "name" : "microprofile-health",
+      "dependencies" : [ {
+        "name" : "management",
+        "optional" : false
+      }, {
+        "name" : "microprofile-config",
+        "optional" : false
+      }, {
+        "name" : "health",
+        "optional" : false
+      } ],
+      "managementModel" : {
+        "address" : "/",
+        "children" : [ {
+          "address" : "subsystem=microprofile-health-smallrye",
+          "attributes" : {
+            "empty-liveness-checks-status" : "${env.MP_HEALTH_EMPTY_LIVENESS_CHECKS_STATUS:UP}",
+            "empty-readiness-checks-status" : "${env.MP_HEALTH_EMPTY_READINESS_CHECKS_STATUS:UP}",
+            "empty-startup-checks-status" : "${env.MP_HEALTH_EMPTY_STARTUP_CHECKS_STATUS:UP}",
+            "security-enabled" : "false"
+          }
+        } ]
+      },
+      "feature-pack" : "org.wildfly:wildfly-galleon-pack:37.0.0.Beta1-SNAPSHOT",
+      "description" : "Support for MicroProfile Health",
+      "stability" : "default",
+      "glowRules" : [ {
+        "name" : "org.wildfly.rule.class",
+        "value" : "org.eclipse.microprofile.health.*"
+      }, {
+        "name" : "org.wildfly.rule.annotations",
+        "value" : "org.eclipse.microprofile.health"
+      } ],
+      "glowDiscoverable" : true
+    }, {
+      "name" : "microprofile-telemetry",
+      "dependencies" : [ {
+        "name" : "cdi",
+        "optional" : false
+      }, {
+        "name" : "opentelemetry",
+        "optional" : false
+      }, {
+        "name" : "microprofile-config",
+        "optional" : false
+      } ],
+      "managementModel" : {
+        "address" : "/",
+        "children" : [ {
+          "address" : "subsystem=microprofile-telemetry"
+        } ]
+      },
+      "feature-pack" : "org.wildfly:wildfly-galleon-pack:37.0.0.Beta1-SNAPSHOT",
+      "description" : "Support for MicroProfile Telemetry",
+      "stability" : "default",
+      "glowRules" : [ {
+        "name" : "org.wildfly.rule.inclusion-mode",
+        "value" : "all-dependencies"
+      } ],
+      "glowDiscoverable" : true
+    }, {
+      "name" : "observability",
+      "dependencies" : [ {
+        "name" : "microprofile-config",
+        "optional" : true
+      }, {
+        "name" : "microprofile-telemetry",
+        "optional" : true
+      }, {
+        "name" : "microprofile-health",
+        "optional" : true
+      }, {
+        "name" : "metrics",
+        "optional" : true
+      }, {
+        "name" : "health",
+        "optional" : true
+      } ],
+      "managementModel" : { },
+      "feature-pack" : "org.wildfly:wildfly-galleon-pack:37.0.0.Beta1-SNAPSHOT",
+      "description" : "Aggregation of multiple monitoring functionalities",
+      "stability" : "default",
+      "glowDiscoverable" : false
+    }, {
+      "name" : "opentelemetry",
+      "dependencies" : [ {
+        "name" : "cdi",
+        "optional" : false
+      } ],
+      "managementModel" : {
+        "address" : "/",
+        "children" : [ {
+          "address" : "subsystem=opentelemetry"
+        } ]
+      },
+      "feature-pack" : "org.wildfly:wildfly-galleon-pack:37.0.0.Beta1-SNAPSHOT",
+      "description" : "Support for OpenTelemetry",
+      "stability" : "default",
+      "glowRules" : [ {
+        "name" : "org.wildfly.rule.class",
+        "value" : "io.opentelemetry.api.*,io.opentelemetry.sdk.*"
+      }, {
+        "name" : "org.wildfly.rule.annotations",
+        "value" : "io.opentelemetry.instrumentation.annotations"
+      } ],
+      "glowDiscoverable" : true
     } ]
   }, {
     "name" : "Security",
