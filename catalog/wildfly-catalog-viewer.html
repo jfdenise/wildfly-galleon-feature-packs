@@ -315,8 +315,22 @@
         </div>
         <!-- Removed catalog-description div as its content is now in H1 -->
         <div id="documentation-section" class="documentation-section" style="display: none;"></div>
-        <div style="margin-bottom: 20px; text-align: center;">
-            <input type="search" id="searchInput" placeholder="Search catalog (e.g., layer, description, note)..." style="padding: 10px; width: 60%; border-radius: 4px; border: 1px solid #ccc; font-size: 1em;">
+        <div style="margin-bottom: 5px; text-align: center;">
+            <select id="stabilitySelect" style="padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 1em; margin-right: 10px;">
+                <option value="experimental" selected>Experimental stability</option>
+                <option value="preview">Preview stability</option>
+                <option value="community">Community stability</option>
+                <option value="default">Default stability</option>
+            </select>
+            <input type="search" id="searchInput" placeholder="Search catalog..." style="padding: 10px; width: 40%; border-radius: 4px; border: 1px solid #ccc; font-size: 1em;">
+        </div>
+        <div id="searchFields" style="margin-bottom: 20px; text-align: center; font-size: 0.9em;">
+            Search in:
+            <label style="margin-left: 10px;"><input type="checkbox" class="search-field-checkbox" value="layerName" checked> Layer Name</label>
+            <label style="margin-left: 10px;"><input type="checkbox" class="search-field-checkbox" value="description" checked> Description</label>
+            <label style="margin-left: 10px;"><input type="checkbox" class="search-field-checkbox" value="api" checked> Java API</label>
+            <label style="margin-left: 10px;"><input type="checkbox" class="search-field-checkbox" value="addOn" checked> Glow Add-On</label>
+            <label style="margin-left: 10px;"><input type="checkbox" class="search-field-checkbox" value="featurePack" checked> Feature Pack</label>
         </div>
         <div id="data-display"></div>
     </div>
@@ -868,11 +882,13 @@
                 })
                 .then(data => {
                     originalJsonData = data; // Store the original full data
-                    displayData(originalJsonData); // Initial display
-                    // If search listener is not set up or needs re-setup with new data context
+                    displayData(originalJsonData); // Display all data immediately on load
+
+                    // Set up listeners AFTER initial data display
                     if (!document.getElementById('searchInput').listenerAttached) {
                          setupSearchListener();
                     }
+                    // performSearch will now only be called on user interaction
                 })
                 .catch(error => {
                     console.error('Error fetching or parsing JSON:', error);
@@ -908,52 +924,101 @@
             // const searchInput = document.getElementById('searchInput'); // Duplicate declaration removed
             if (!searchInput || !originalJsonData) return;
 
-            searchInput.addEventListener('input', () => {
-                const searchTerm = searchInput.value.toLowerCase().trim();
+            const stabilitySelect = document.getElementById('stabilitySelect');
 
-                if (searchTerm === '') {
+            const performSearch = () => {
+                if (!originalJsonData) { // Guard against data not being loaded yet
+                    displayData({ categories: [], legend: {}, documentation: [] }); // Show empty/error state
+                    return;
+                }
+
+                const searchTerm = searchInput.value.toLowerCase().trim();
+                // Ensure stabilitySelect.value is read reliably, fallback to 'experimental' if needed initially
+                const selectedStabilityValue = (stabilitySelect && stabilitySelect.value) ? stabilitySelect.value : "experimental";
+
+                // Display original data if search is empty AND 'experimental' (show all) stability is selected
+                if (searchTerm === '' && selectedStabilityValue.toLowerCase() === 'experimental') {
                     displayData(originalJsonData);
                     return;
                 }
 
                 const filteredCategories = originalJsonData.categories.map(category => {
-                    const categoryNameMatches = category.name && category.name.toLowerCase().includes(searchTerm);
-                    const categoryDescriptionMatches = category.description && category.description.toLowerCase().includes(searchTerm);
-
                     let functionalitiesToShow;
 
-                    if (categoryNameMatches || categoryDescriptionMatches) {
-                        // If category itself matches, we show it with ALL its original functionalities
-                        functionalitiesToShow = category.functionalities;
-                    } else {
-                        // If category doesn't match, filter its functionalities
-                        functionalitiesToShow = category.functionalities.filter(func => {
-                            const layerMatch = func.name && func.name.toLowerCase().includes(searchTerm); // Changed func.layer to func.name
-                            const descMatch = func.description && func.description.toLowerCase().includes(searchTerm);
-                            const noteMatch = func.note && func.note.toLowerCase().includes(searchTerm);
-                            const glowAddOnMatch = func.glowAddOn && typeof func.glowAddOn === 'string' && func.glowAddOn.toLowerCase().includes(searchTerm);
-                            const featurePackMatch = func['feature-pack'] && func['feature-pack'].toLowerCase().includes(searchTerm);
-                            let glowRuleValueMatch = false;
-                            if (func.glowRules && Array.isArray(func.glowRules)) {
-                                glowRuleValueMatch = func.glowRules.some(rule => rule.value && rule.value.toLowerCase().includes(searchTerm));
-                            }
-                            return layerMatch || descMatch || noteMatch || glowAddOnMatch || featurePackMatch || glowRuleValueMatch;
-                        });
-                    }
+                    functionalitiesToShow = category.functionalities.filter(func => {
+                        let termMatches = searchTerm === ''; // If no search term, all functionalities initially pass this check
 
-                    // Only include the category if it matched OR it has functionalities to show after filtering
-                    if (categoryNameMatches || categoryDescriptionMatches || (functionalitiesToShow && functionalitiesToShow.length > 0)) {
+                        if (searchTerm !== '') {
+                            const searchFieldsCheckboxes = document.querySelectorAll('.search-field-checkbox');
+                            let selectedFields = [];
+                            searchFieldsCheckboxes.forEach(checkbox => {
+                                if (checkbox.checked) {
+                                    selectedFields.push(checkbox.value);
+                                }
+                            });
+
+                            termMatches = false; // Reset for actual search term matching
+                            if (selectedFields.includes('layerName')) {
+                                if (func.name && func.name.toLowerCase().includes(searchTerm)) termMatches = true;
+                            }
+                            if (!termMatches && selectedFields.includes('description')) {
+                                if (func.description && func.description.toLowerCase().includes(searchTerm)) termMatches = true;
+                                else if (func.note && func.note.toLowerCase().includes(searchTerm)) termMatches = true;
+                            }
+                            if (!termMatches && selectedFields.includes('addOn')) {
+                                if (func.glowAddOn && typeof func.glowAddOn === 'string' && func.glowAddOn.toLowerCase().includes(searchTerm)) termMatches = true;
+                            }
+                            if (!termMatches && selectedFields.includes('featurePack')) {
+                                if (func['feature-pack'] && func['feature-pack'].toLowerCase().includes(searchTerm)) termMatches = true;
+                            }
+                            if (!termMatches && selectedFields.includes('api')) {
+                                if (func.glowRules && Array.isArray(func.glowRules)) {
+                                    if (func.glowRules.some(rule => rule.value && rule.value.toLowerCase().includes(searchTerm))) termMatches = true;
+                                }
+                            }
+                        }
+
+                        // Now, check stability filter with hierarchical logic
+                        let stabilityMatches = false;
+                        const funcStability = func.stability ? func.stability.toLowerCase() : 'default'; // Treat undefined/empty as 'default'
+
+                        switch (selectedStabilityValue.toLowerCase()) { // Use selectedStabilityValue
+                            case 'experimental':
+                                stabilityMatches = true; // Experimental shows all
+                                break;
+                            case 'preview':
+                                stabilityMatches = ['preview', 'community', 'default'].includes(funcStability);
+                                break;
+                            case 'community':
+                                stabilityMatches = ['community', 'default'].includes(funcStability);
+                                break;
+                            case 'default':
+                                stabilityMatches = (funcStability === 'default');
+                                break;
+                            default: // Should not happen with the select, but good practice
+                                stabilityMatches = true; 
+                        }
+                        
+                        // A functionality is shown if it matches the search term (or no term) AND the stability filter
+                        return termMatches && stabilityMatches;
+                    });
+
+                    // Include the category if it has functionalities to show after all filters
+                    if (functionalitiesToShow && functionalitiesToShow.length > 0) {
                         return { ...category, functionalities: functionalitiesToShow };
                     }
                     return null;
-                }).filter(category => category !== null); // Remove categories that became null
+                }).filter(category => category !== null);
 
-                const filteredData = { 
-                    ...originalJsonData, 
-                    categories: filteredCategories 
+                const filteredData = {
+                    ...originalJsonData,
+                    categories: filteredCategories
                 };
                 displayData(filteredData);
-            });
+            };
+
+            searchInput.addEventListener('input', performSearch);
+            stabilitySelect.addEventListener('change', performSearch);
         }
     </script>
 </body>
