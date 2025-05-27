@@ -105,7 +105,7 @@
       "feature-pack" : "org.wildfly:wildfly-ai-feature-pack:1.0.0-SNAPSHOT",
       "description" : "Support for GitHub chat model",
       "glowAddOn" : "github-chat-model",
-      "stability" : "default",
+      "stability" : "experimental",
       "glowRules" : [ {
         "name" : "org.wildfly.rule.annotation.field.value",
         "value" : "io.smallrye.llm.spi.RegisterAIService,chatModelName=github"
@@ -142,7 +142,7 @@
       "feature-pack" : "org.wildfly:wildfly-ai-feature-pack:1.0.0-SNAPSHOT",
       "description" : "Support for Mistral AI chat model",
       "glowAddOn" : "mistral-ai-chat-model",
-      "stability" : "default",
+      "stability" : "experimental",
       "glowRules" : [ {
         "name" : "org.wildfly.rule.annotation.field.value",
         "value" : "io.smallrye.llm.spi.RegisterAIService,chatModelName=mistral"
@@ -164,7 +164,7 @@
       "feature-pack" : "org.wildfly:wildfly-ai-feature-pack:1.0.0-SNAPSHOT",
       "description" : "Support for neo4j content retriever",
       "glowAddOn" : "neo4j-content-retriever",
-      "stability" : "default",
+      "stability" : "experimental",
       "glowRules" : [ {
         "name" : "org.wildfly.rule.annotation.field.value",
         "value" : "io.smallrye.llm.spi.RegisterAIService,contentRetrieverName=neo4j-retriever"
@@ -202,7 +202,7 @@
       "feature-pack" : "org.wildfly:wildfly-ai-feature-pack:1.0.0-SNAPSHOT",
       "description" : "Support for Ollama chat model",
       "glowAddOn" : "ollama-chat-model",
-      "stability" : "default",
+      "stability" : "experimental",
       "glowRules" : [ {
         "name" : "org.wildfly.rule.annotation.field.value",
         "value" : "io.smallrye.llm.spi.RegisterAIService,chatModelName=ollama"
