@@ -308,7 +308,7 @@
     <div class="container">
         <h1 id="mainPageTitle">WildFly Catalog</h1>
         <!-- Moved JSON URL input and Load button here -->
-        <div style="margin-bottom: 10px; text-align: center;">
+        <div style="margin-bottom: 10px; text-align: center;" hidden>
             <label for="jsonUrlInput" style="margin-right: 5px; font-size: 0.9em;">WildFly metadata json file:</label>
             <input type="text" id="jsonUrlInput" style="padding: 8px; width: 50%; border-radius: 4px; border: 1px solid #ccc; font-size: 0.9em;">
             <button id="loadJsonButton" style="padding: 8px 12px; margin-left: 5px; border-radius: 4px; border: 1px solid #ccc; background-color: #e9ecef; cursor: pointer;">Load</button>
@@ -316,11 +316,12 @@
         <!-- Removed catalog-description div as its content is now in H1 -->
         <div id="documentation-section" class="documentation-section" style="display: none;"></div>
         <div style="margin-bottom: 5px; text-align: center;">
+            <label for="stabilitySelect" style="margin-right: 5px; font-size: 0.9em;">Minimum stability level:</label>
             <select id="stabilitySelect" style="padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 1em; margin-right: 10px;">
-                <option value="experimental" selected>Experimental stability</option>
-                <option value="preview">Preview stability</option>
-                <option value="community">Community stability</option>
-                <option value="default">Default stability</option>
+                <option value="experimental" selected>Experimental</option>
+                <option value="preview">Preview</option>
+                <option value="community">Community</option>
+                <option value="default">Default</option>
             </select>
             <input type="search" id="searchInput" placeholder="Search catalog..." style="padding: 10px; width: 40%; border-radius: 4px; border: 1px solid #ccc; font-size: 1em;">
         </div>
@@ -329,6 +330,7 @@
             <label style="margin-left: 10px;"><input type="checkbox" class="search-field-checkbox" value="layerName" checked> Layer Name</label>
             <label style="margin-left: 10px;"><input type="checkbox" class="search-field-checkbox" value="description" checked> Description</label>
             <label style="margin-left: 10px;"><input type="checkbox" class="search-field-checkbox" value="api" checked> Java API</label>
+            <label style="margin-left: 10px;"><input type="checkbox" class="search-field-checkbox" value="stability" checked> Stability</label>
             <label style="margin-left: 10px;"><input type="checkbox" class="search-field-checkbox" value="addOn" checked> Glow Add-On</label>
             <label style="margin-left: 10px;"><input type="checkbox" class="search-field-checkbox" value="featurePack" checked> Feature Pack</label>
         </div>
