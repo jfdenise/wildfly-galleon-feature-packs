@@ -1,5 +1,5 @@
 {
-  "description" : "Catalog of WildFly 36.0.1.Final features to provision a WildFly server",
+  "description" : "Catalog of WildFly 36.0.1.Final features (incomplete for now) to provision a WildFly server",
   "documentation" : [ {
     "name" : "WildFly documentation",
     "url" : "https://docs.wildfly.org/"

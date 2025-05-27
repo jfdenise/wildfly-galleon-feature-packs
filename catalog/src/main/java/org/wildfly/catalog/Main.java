@@ -30,7 +30,7 @@ public class Main {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode node = mapper.readTree(stream);
             ObjectNode target = mapper.createObjectNode();
-            target.put("description", "Catalog of WildFly "+ wildflyVersion+" features to provision a WildFly server");
+            target.put("description", "Catalog of WildFly "+ wildflyVersion+" features (incomplete for now) to provision a WildFly server");
             target.set("documentation", node.get("documentation"));
             target.set("legend", node.get("legend"));
             ArrayNode an = (ArrayNode) node.get("content");
