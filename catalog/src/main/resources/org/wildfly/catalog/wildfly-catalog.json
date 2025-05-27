@@ -32,11 +32,7 @@
     },
     "content": [
         {
-            "description": "WildFly EE catalog",
-            "url": "https://raw.githubusercontent.com/jfdenise/wildfly/refs/heads/wildfly-catalog/ee-feature-pack/galleon-feature-pack/catalog/wildfly-catalog.json"
-        },
-        {
-            "description": "WildFly Full catalog",
+            "description": "WildFly catalog",
             "url": "https://raw.githubusercontent.com/jfdenise/wildfly/refs/heads/wildfly-catalog/galleon-pack/galleon-feature-pack/catalog/wildfly-catalog.json"
         },
         {

@@ -97,6 +97,13 @@ public class Main {
                             addOn = val.split(",")[1];
                             continue;
                         }
+                        if (name.equals("org.wildfly.rule.kind")) {
+                            String val = prop.get("value").asText();
+                            if(val.equals("default-base-layer")) {
+                                 discoveryRules.add(prop);
+                            }
+                            continue;
+                        }
                         if (name.startsWith("org.wildfly.rule") && !name.startsWith("org.wildfly.rule.add-on")) {
                             discoveryRules.add(prop);
                             continue;
