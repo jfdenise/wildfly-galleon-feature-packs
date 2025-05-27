@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -22,6 +21,11 @@ import java.util.TreeMap;
 public class Main {
 
     public static void main(String[] args) throws Exception {
+        String wildflyVersion = System.getProperty("wildfly-version");
+        if(wildflyVersion == null) {
+            throw new Exception("-Dwildfly-version=<version> must be set");
+        }
+        
         try (InputStream stream = Main.class.getResourceAsStream("wildfly-catalog.json")) {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode node = mapper.readTree(stream);
@@ -33,7 +37,25 @@ public class Main {
             Iterator<JsonNode> it = an.elements();
             Map<String, Map<String, JsonNode>> categories = new TreeMap<>();
             while (it.hasNext()) {
-                String url = it.next().get("url").asText();
+                JsonNode remoteMetadata = it.next();
+                String metadataUrl = remoteMetadata.get("url").asText();
+                JsonNode subCatalogMetadata = mapper.readTree(new URL(metadataUrl));
+                ArrayNode wildflyVersions = (ArrayNode) subCatalogMetadata.get("wildfly-versions");
+                Iterator<JsonNode> versions = wildflyVersions.elements();
+                String url = null;
+                while(versions.hasNext()) {
+                    JsonNode wfVersionNode = versions.next();
+                    String vers = wfVersionNode.get("wildfly-version").asText();
+                    if(vers.equals(wildflyVersion)) {
+                        url = wfVersionNode.get("url").asText();
+                        break;
+                    }
+                }
+                if(url == null) {
+                    // Do we try with the latest one defined in the latest version?
+                    System.err.println("Skipping " + remoteMetadata.get("description") + " no matching metadata for version " + wildflyVersion);
+                    continue;
+                }
                 JsonNode subCatalog = mapper.readTree(new URL(url));
                 String version = subCatalog.get("version").asText();
                 String fp = subCatalog.get("feature-pack-location").asText();
