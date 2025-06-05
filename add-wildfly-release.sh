@@ -13,8 +13,10 @@ function configureSed() {
 
 function createNewVersionDirectory() {
   targetDir=$3
+  addToKnownfeaturePacks=$4
   echo "Creating directory $targetDir/$2"
   cp -r "$targetDir/${1}" "$targetDir/${2}"
+  rm -rf "$targetDir/${2}/known-feature-packs.json"
   # Only change versions in the default space
   if [ "$targetDir" == "." ]; then
       cd "${2}"
@@ -24,8 +26,24 @@ function createNewVersionDirectory() {
        echo "Updating file $i with release $2"
        ${SED} "s|${1}|${2}|" "$i"
        rm "$i".bak
+       if [[ $i != *"tech-preview"* ]] && [[ "$addToKnownfeaturePacks" = "true" ]]; then
+         echo "Adding all feature-packs from $i to the set of known feature-packs"
+         knownFeaturePacks+=($(echo $(cat $i) | grep -oP '(?<=location\=")[a-zA-Z0-9-\.:]*(?=")'))
+       fi
       done
       cd ..
+  else
+    # Only collect feature-packs from the space
+    pushd $targetDir/${2}
+      array=(`find . -type f -name "*.xml"`)
+      for i in "${array[@]}"
+      do
+       if [[ $i != *"tech-preview"* ]] && [[ "$addToKnownfeaturePacks" = "true" ]]; then
+         echo "Adding all feature-packs from $i to the set of known feature-packs"
+         knownFeaturePacks+=($(echo $(cat $i) | grep -oP '(?<=location\=")[a-zA-Z0-9-\.:]*(?=")'))
+       fi
+      done
+    popd
   fi
 }
 
@@ -48,6 +66,9 @@ if [ -d "$newVersion" ]; then
   exit 1
 fi
 
+knownFeaturePacksFile="./$newVersion/known-feature-packs.json"
+knownFeaturePacks=()
+
 function addVersions() {
     dir=$1
     echo "Making changes to the directory $dir"
@@ -57,7 +78,7 @@ function addVersions() {
         previousVersion=$(basename -a $dir/$snapshotDir)
         nextVersion=$newVersion
         echo "Adding a new SNAPSHOT $newVersion from the previous $previousVersion"
-        createNewVersionDirectory $previousVersion $newVersion $dir
+        createNewVersionDirectory $previousVersion $newVersion $dir "false"
     else
         previousVersion=$(basename -a "$dir/$newVersion-SNAPSHOT")
         echo "PREVIOUS " $previousVersion
@@ -72,7 +93,7 @@ function addVersions() {
           fi
         fi
 
-        createNewVersionDirectory $previousVersion $newVersion $dir
+        createNewVersionDirectory $previousVersion $newVersion $dir "true"
         echo "OK1"
         if [ "$micro" = "0" ]; then
           if [ "$stability" = "Final" ]; then
@@ -88,7 +109,7 @@ function addVersions() {
             echo "previousMicroSnapshotVersion=$previousMicroSnapshotVersion"
             nextMicroSnapshot=$major.$minor.1.$stability-SNAPSHOT
             echo Creating the next micro SNAPSHOT release $dir/$nextMicroSnapshot
-            createNewVersionDirectory $newVersion $nextMicroSnapshot $dir
+            createNewVersionDirectory $newVersion $nextMicroSnapshot $dir "false"
             echo "$dir/versions.yaml file: adding ${newVersion} version"
             ${SED} "/^versions=*/s/$/, ${nextMicroSnapshot}/" $dir/versions.yaml
             rm "$dir/versions.yaml".bak
@@ -104,7 +125,7 @@ function addVersions() {
           nextSnapshot=$(basename -a $dir/$nextVersion-SNAPSHOT)
           if [ ! -d "$dir/$nextSnapshot" ]; then
             nextVersion=$nextVersion-SNAPSHOT
-            createNewVersionDirectory $newVersion $nextVersion $dir
+            createNewVersionDirectory $newVersion $nextVersion $dir "false"
           else
             echo "New SNAPSHOT version $nextVersion-SNAPSHOT already exists."
             nextVersion=
@@ -116,7 +137,7 @@ function addVersions() {
           # Create the new SNAPSHOT if it doesn't already exist
           if [ ! -d "$dir/$nextSnapshot" ]; then
             nextVersion=$nextVersion-SNAPSHOT
-            createNewVersionDirectory $newVersion $nextVersion $dir
+            createNewVersionDirectory $newVersion $nextVersion $dir "false"
           else
             echo "New SNAPSHOT version $nextVersion-SNAPSHOT already exists."
             nextVersion=
@@ -180,6 +201,23 @@ configureSed
 addVersions "."
 
 addVersions "spaces/incubating"
+
+unique_array=()
+for element in "${knownFeaturePacks[@]}"; do
+    if [[ ! " ${unique_array[@]} " =~ " $element " ]]; then
+        unique_array+=("$element")
+    fi
+done
+
+val="{\"featurePacks\": ["
+for i in "${unique_array[@]}"
+do
+   val+="\"$i\","
+done
+val="${val::-1}"
+val+="]}"
+echo "$val" 
+echo "$val" > $knownFeaturePacksFile
 
 echo "DONE!"
 echo "NOTE: Please check that this project Issues: https://github.com/wildfly/wildfly-galleon-feature-packs/issues 
