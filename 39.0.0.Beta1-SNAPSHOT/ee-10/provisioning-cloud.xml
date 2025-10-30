@@ -1,7 +1,10 @@
 <?xml version="1.0" ?>
 
 <installation xmlns="urn:jboss:galleon:provisioning:3.0">
+    <feature-pack location="org.wildfly:wildfly-ee-10-galleon-pack:39.0.0.Beta1-SNAPSHOT"/>
     <feature-pack location="org.wildfly:wildfly-galleon-pack:39.0.0.Beta1-SNAPSHOT"/>
+    <feature-pack location="org.wildfly.cloud:wildfly-cloud-galleon-pack:8.1.1.Final-SNAPSHOT"/>
     <feature-pack location="org.wildfly:wildfly-datasources-galleon-pack:11.0.1.Final-SNAPSHOT"/>
     <feature-pack location="org.wildfly.extras.grpc:wildfly-grpc-feature-pack:0.1.14-SNAPSHOT"/>
+    
 </installation>

@@ -1,0 +1,6 @@
+variants: [
+ {
+   name: "tech-preview",
+   description: "WildFly Preview"
+ }
+]

@@ -35,7 +35,7 @@ function createNewVersionDirectory() {
        echo "Updating file $i with release $2"
        ${SED} "s|${1}|${2}|" "$i"
        rm "$i".bak
-       if [[ $i != *"tech-preview"* ]] && [[ "$addToKnownfeaturePacks" = "true" ]]; then
+       if [[ $i != *"preview"* ]] && [[ "$addToKnownfeaturePacks" = "true" ]]; then
          addFeaturePacks "$i"
        fi
       done
@@ -46,7 +46,7 @@ function createNewVersionDirectory() {
       array=(`find . -type f -name "*.xml"`)
       for i in "${array[@]}"
       do
-       if [[ $i != *"tech-preview"* ]] && [[ "$addToKnownfeaturePacks" = "true" ]]; then
+       if [[ $i != *"preview"* ]] && [[ "$addToKnownfeaturePacks" = "true" ]]; then
          addFeaturePacks "$i"
        fi
       done
